@@ -19,6 +19,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/whitesky-tes
-            git pull origin master
+            git pull origin main
             yarn install
             pm2 restart whitesky-tes
