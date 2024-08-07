@@ -1,0 +1,18 @@
+.newsContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media only screen and (min-width: 769px) {
+  .newsContainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.newsContainer article {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
