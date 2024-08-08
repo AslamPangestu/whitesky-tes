@@ -1,58 +1,45 @@
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
 
-import styles from "./index.module.css";
-import Link from "next/link";
+import DBConnection from "src/libs/db";
+import NewsRepository from "src/repositories/NewsRepository";
+
+import type { NewsType } from "src/models/NewsModel";
+import type { DBResponse } from "src/libs/db";
+
+const DataSection = dynamic(() => import("./_components/DataSection"));
 
 export const metadata: Metadata = {
   title: "Homepage",
   description: "Homepage seo description for news",
 };
 
-const DUMMIES = [
-  {
-    id: 1,
-    title: "Title",
-    author: "Author",
-    description: "Description",
-    created_at: new Date(),
-  },
-  {
-    id: 2,
-    title: "Title",
-    author: "Author",
-    description: "Description",
-    created_at: new Date(),
-  },
-  {
-    id: 3,
-    title: "Title",
-    author: "Author",
-    description: "Description",
-    created_at: new Date(),
-  },
-];
+const getData = async (): Promise<Array<NewsType>> => {
+  const { db, error: errorDB }: DBResponse = await DBConnection();
+  if (!db) {
+    throw new Error(errorDB);
+  }
 
-const HomePage = () => {
+  const repo: NewsRepository = new NewsRepository(db);
+  const { data, error } = await repo.find({ page: 1, limit: 20 });
+  if (error) {
+    db.release();
+    throw new Error(error);
+  }
+
+  db.release();
+  return data;
+};
+
+const HomePage = async () => {
+  const data: Array<NewsType> = await getData();
+
   return (
     <>
       <section>
         <h1>News Homepage</h1>
       </section>
-      <section className={styles.newsContainer}>
-        {DUMMIES.map((item) => (
-          <Link key={item.id} href={`/${item.id}`}>
-            <article>
-              <div>Image</div>
-              <div>
-                <h2>{item.title}</h2>
-                <span>{item.author}</span>
-                <span>{item.created_at.toISOString()}</span>
-                <p>{item.description}</p>
-              </div>
-            </article>
-          </Link>
-        ))}
-      </section>
+      <DataSection baseData={data} />
     </>
   );
 };

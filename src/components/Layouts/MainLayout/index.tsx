@@ -1,5 +1,9 @@
 import Link from "next/link";
-import styles from "./index.module.css";
+import dynamic from "next/dynamic";
+
+const AuthButton = dynamic(() => import("./AuthButton"));
+
+import styles from "../index.module.css";
 
 interface Props {
   children: React.ReactNode;
@@ -12,9 +16,7 @@ const MainLayout = ({ children }: Props) => {
         <Link href="/">
           <span>News</span>
         </Link>
-        <Link href="/login">
-          <span>Login</span>
-        </Link>
+        <AuthButton />
       </header>
       <main className={styles.mainContainer}>{children}</main>
       <footer>Footer</footer>

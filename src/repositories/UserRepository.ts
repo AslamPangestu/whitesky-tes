@@ -17,6 +17,7 @@ interface IUserRepository {
   create(payload: CreateUserDTOType): Promise<IRepository>;
   findByEmail(email: string): Promise<IRepository>;
   findByID(id: number): Promise<IRepository>;
+  updatePassword(id: number, password: string): Promise<IRepository>;
 }
 
 class UserRepository implements IUserRepository {
@@ -68,6 +69,26 @@ class UserRepository implements IUserRepository {
       return { data: result, error: null };
     } catch (error) {
       console.error("Find By ID User Error", error);
+      return { data: null, error };
+    }
+  };
+
+  updatePassword = async (
+    id: number,
+    password: string,
+  ): Promise<IRepository> => {
+    try {
+      const query: [QueryResult, FieldPacket[]] = await this.pool.execute(
+        "UPDATE users SET password = ? WHERE id = ?",
+        [password, id],
+      );
+      const result = query[0] as ResultSetHeader;
+      if (!result.affectedRows) {
+        throw new Error("Failed to update password");
+      }
+      return { data: result.affectedRows, error: null };
+    } catch (error) {
+      console.error("Update Password User Error", error);
       return { data: null, error };
     }
   };

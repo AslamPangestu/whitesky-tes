@@ -1,40 +1,76 @@
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
+
+import DBConnection from "src/libs/db";
+import NewsRepository from "src/repositories/NewsRepository";
+
+import type { DBResponse } from "src/libs/db";
+import type { NewsType } from "src/models/NewsModel";
 
 interface Props {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { slug: string };
 }
 
-export const generateStaticParams = async () => {
-  // const posts = await fetch("https://.../posts").then((res) => res.json());
+const getData = async (slug: string): Promise<NewsType> => {
+  const { db, error: errorDB }: DBResponse = await DBConnection();
+  if (!db) {
+    throw new Error(errorDB);
+  }
 
-  return [];
+  const repo: NewsRepository = new NewsRepository(db);
+  const { data, error } = await repo.findBySlug(slug);
+  if (error) {
+    db.release();
+    throw new Error(error);
+  }
+
+  db.release();
+  return data;
 };
 
-export const generateMetadata = async (
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> => {
-  // const id = params.id;
-  // const product = await fetch(`https://.../${id}`).then((res) => res.json());
-  // const previousImages = (await parent).openGraph?.images || [];
+export const generateStaticParams = async () => {
+  const { db, error: errorDB }: DBResponse = await DBConnection();
+  if (!db) {
+    throw new Error(errorDB);
+  }
+
+  const repo: NewsRepository = new NewsRepository(db);
+  const { data, error } = await repo.find({
+    page: 0,
+    limit: 0,
+    fields: ["slug"],
+  });
+  if (error) {
+    db.release();
+    throw new Error(error);
+  }
+
+  db.release();
+  return data;
+};
+
+export const generateMetadata = async ({
+  params,
+}: Props): Promise<Metadata> => {
+  const data: NewsType = await getData(params.slug);
 
   return {
-    title: "Testing Dynamic",
-    description: "Testing dynamic",
+    title: data.title,
+    description: data.description,
   };
 };
 
-const DetailPage = () => {
+const DetailPage = async ({ params }: { params: { slug: string } }) => {
+  const data: NewsType = await getData(params.slug);
+
   return (
     <section>
-      <h1>Title</h1>
+      <h1>{data.title}</h1>
       <div>
-        <span>Created At</span>
-        <span>Author</span>
+        <span>{data.created_at}</span>
+        <span>{data.author}</span>
       </div>
       <div>image</div>
-      <p>Description</p>
+      <p>{data.body}</p>
     </section>
   );
 };
