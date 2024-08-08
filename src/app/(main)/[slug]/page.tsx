@@ -5,6 +5,12 @@ interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
+export const generateStaticParams = async () => {
+  // const posts = await fetch("https://.../posts").then((res) => res.json());
+
+  return [];
+};
+
 export const generateMetadata = async (
   { params, searchParams }: Props,
   parent: ResolvingMetadata,

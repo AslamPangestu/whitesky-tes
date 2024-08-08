@@ -13,7 +13,7 @@ const RegisterForm = () => {
   return (
     <form className={styles.formContainer} onSubmit={_onSubmit}>
       <input name="name" />
-      <input name="phone" />
+      <input name="phone_number" />
       <input name="email" />
       <input name="password" />
       <button type="submit">Register</button>
