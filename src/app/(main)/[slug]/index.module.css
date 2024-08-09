@@ -1,0 +1,22 @@
+.detailNewsContainer > div:nth-child(4) {
+  width: 100%;
+  height: calc(100vw * 0.5);
+  position: relative;
+}
+
+.detailNewsContainer > div:nth-child(3) > span:first-child {
+  font-weight: bold;
+}
+
+@media only screen and (min-width: 481px) {
+    .detailNewsContainer > div:nth-child(4) {
+        /* height: calc(100vw * 0.4); */
+    }
+  }
+
+@media only screen and (min-width: 1024px) {
+    .detailNewsContainer > div:nth-child(4) {
+        height: calc(100vw * 0.5);
+        /* height: calc(100vw * 0.5); */
+    }
+  }

@@ -11,6 +11,7 @@ interface IRepository {
 interface INewsRepository {
   find(pagination: PaginationInterface): Promise<IRepository>;
   findBySlug(slug: string): Promise<IRepository>;
+  checkHaveMoreData(page: number, limit: number): Promise<IRepository>;
 }
 
 class NewsRepository implements INewsRepository {
@@ -25,10 +26,13 @@ class NewsRepository implements INewsRepository {
       const columns = pagination.fields?.length
         ? pagination.fields.join(",")
         : "*";
+      const offset = (pagination.page - 1) * pagination.limit;
+
       let rawQuery = `SELECT ${columns} FROM news ORDER BY id`;
       if (pagination.page) {
-        rawQuery += ` LIMIT ${pagination.limit} OFFSET (${pagination.page} - 1) * ${pagination.limit}`;
+        rawQuery += ` LIMIT ${pagination.limit} OFFSET ${offset}`;
       }
+
       const query: [QueryResult, FieldPacket[]] =
         await this.pool.execute(rawQuery);
       const result = query[0] as Array<NewsType>;
@@ -49,6 +53,25 @@ class NewsRepository implements INewsRepository {
       return { data: result, error: null };
     } catch (error) {
       console.error("Find By ID News Error", error);
+      return { data: null, error };
+    }
+  };
+
+  checkHaveMoreData = async (
+    page: number,
+    limit: number,
+  ): Promise<IRepository> => {
+    try {
+      const offset = page * limit;
+
+      const query: [QueryResult, FieldPacket[]] = await this.pool.execute(
+        `SELECT id FROM news ORDER BY id LIMIT 1 OFFSET ${offset}`,
+      );
+
+      const result = query[0];
+      return { data: result, error: null };
+    } catch (error) {
+      console.error("Find News Error", error);
       return { data: null, error };
     }
   };

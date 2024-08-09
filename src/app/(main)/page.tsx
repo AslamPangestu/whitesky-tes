@@ -9,12 +9,19 @@ import type { DBResponse } from "src/libs/db";
 
 const DataSection = dynamic(() => import("./_components/DataSection"));
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Homepage",
   description: "Homepage seo description for news",
 };
 
-const getData = async (): Promise<Array<NewsType>> => {
+interface GetDataResponse {
+  haveMore: boolean;
+  data: Array<NewsType>;
+}
+
+const getData = async (): Promise<GetDataResponse> => {
   const { db, error: errorDB }: DBResponse = await DBConnection();
   if (!db) {
     throw new Error(errorDB);
@@ -27,19 +34,29 @@ const getData = async (): Promise<Array<NewsType>> => {
     throw new Error(error);
   }
 
+  let haveMore = false;
+  if (data.length) {
+    const { data, error: totalError } = await repo.checkHaveMoreData(1, 20);
+    if (totalError) {
+      db.release();
+      throw new Error(totalError);
+    }
+    haveMore = !!data[0];
+  }
+
   db.release();
-  return data;
+  return { haveMore, data };
 };
 
 const HomePage = async () => {
-  const data: Array<NewsType> = await getData();
+  const { data, haveMore }: GetDataResponse = await getData();
 
   return (
     <>
       <section>
         <h1>News Homepage</h1>
       </section>
-      <DataSection baseData={data} />
+      <DataSection baseData={data} baseHaveMore={haveMore} />
     </>
   );
 };

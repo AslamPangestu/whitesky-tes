@@ -12,6 +12,13 @@ export interface GetRequest {
   query: Request;
 }
 
+export interface Response {
+  status: boolean;
+  message: string;
+  data: any | null;
+  eror: any | null;
+}
+
 const generateQuery = (obj: Request) => {
   const query = Object.keys(obj)
     .reduce((carry, key) => {
@@ -24,8 +31,11 @@ const generateQuery = (obj: Request) => {
   return `?${query}`;
 };
 
-export const Post = async (url: string, { arg }: { arg: PostRequest }) => {
-  return await fetch(`/api${url}`, {
+export const Post = async (
+  url: string,
+  { arg }: { arg: PostRequest },
+): Promise<Response> => {
+  const response = await fetch(`/api${url}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,16 +45,22 @@ export const Post = async (url: string, { arg }: { arg: PostRequest }) => {
     },
     body: JSON.stringify(arg.payload),
   });
+  const body = await response.json();
+  return { ...body, status: `${response.status}`.charAt(0) === "2" };
 };
 
-export const Get = (arg: GetRequest) => async (url: string) => {
-  return await fetch(`/api${url}${generateQuery(arg.query)}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(arg?.token && {
-        Authorization: `Bearer ${arg.token}`,
-      }),
-    },
-  });
-};
+export const Get =
+  (arg: GetRequest) =>
+  async (url: string): Promise<Response> => {
+    const response = await fetch(`/api${url}${generateQuery(arg.query)}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(arg?.token && {
+          Authorization: `Bearer ${arg.token}`,
+        }),
+      },
+    });
+    const body = await response.json();
+    return { ...body, status: `${response.status}`.charAt(0) === "2" };
+  };

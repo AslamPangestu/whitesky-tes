@@ -57,8 +57,8 @@ const ProfilePage = async () => {
     <>
       <section className={styles.formContainer}>
         <h1>{data.name}</h1>
-        <span>{data.phone_number}</span>
-        <span>{data.email}</span>
+        <span>Phone Number: {data.phone_number}</span>
+        <span>Email: {data.email}</span>
       </section>
       <section>
         <h2>Change Password</h2>

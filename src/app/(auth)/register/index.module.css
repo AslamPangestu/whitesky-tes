@@ -1,3 +1,25 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container > div {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.container > div > h1 {
+  text-align: center;
+}
+
+.container > div > div:last-child {
+  text-align: center;
+}
+
 .formContainer {
   display: flex;
   flex-direction: column;

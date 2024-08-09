@@ -4,9 +4,24 @@
   margin: auto;
 }
 
-.headerContainer{
+.headerContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
+}
+
+.headerContainer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.headerContainer > * {
+  padding: 0.5rem 1rem;
+}
+
+.headerContainer > a:first-child {
+  font-weight: bold;
+  font-size: 1.5rem;
 }

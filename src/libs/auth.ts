@@ -20,7 +20,7 @@ export const verifyToken = (token: string): VeriyTokenResponse => {
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayloadType;
     return { data: decoded, error: null };
   } catch (error) {
-    console.error("JWT Error", error);
+    console.error("JWT Verification Error", error);
     return { data: null, error };
   }
 };

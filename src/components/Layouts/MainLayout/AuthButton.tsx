@@ -1,31 +1,39 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import Cookie from "js-cookie";
+import { toast } from "react-hot-toast";
+
+import DropdownButton from "src/components/DropdownButton";
+import Storage from "src/libs/storage";
 
 import type { UserDTOType } from "src/dto/UserDTO";
 
-interface User {
-  value: UserDTOType;
-  timestamp: string;
-}
-
 const AuthButton = () => {
+  const router = useRouter();
+
   const [user, setUser] = useState<UserDTOType | null>(null);
 
   useEffect(() => {
-    const localUser = localStorage.getItem("user");
-    if (!localUser) {
-      return;
+    const storage = new Storage("user");
+    const user: UserDTOType = storage.get();
+    if (user) {
+      setUser(user);
     }
-    const parseUser: User = JSON.parse(localUser);
-    const currentDate = dayjs();
-    if (currentDate.diff(parseUser.timestamp, "hour") > 24) {
-      localStorage.removeItem("user");
-      return;
-    }
-    setUser(parseUser.value);
   }, []);
+
+  const _goToProfile = () => {
+    router.push("/profile");
+  };
+
+  const _onLogout = () => {
+    const storage = new Storage("user");
+    storage.remove();
+    Cookie.remove("token");
+    toast.success("Goddbye!");
+    location.reload();
+  };
 
   if (!user) {
     return (
@@ -35,7 +43,15 @@ const AuthButton = () => {
     );
   }
 
-  return <span>{user.name}</span>;
+  return (
+    <DropdownButton
+      label={user.name}
+      items={[
+        { key: "profile", label: "Profile", onClick: _goToProfile },
+        { key: "logout", label: "Logout", onClick: _onLogout },
+      ]}
+    />
+  );
 };
 
 export default AuthButton;

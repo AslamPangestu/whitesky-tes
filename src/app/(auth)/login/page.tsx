@@ -4,23 +4,25 @@ import Link from "next/link";
 
 const LoginForm = dynamic(() => import("./_components/LoginForm"));
 
+import styles from "./index.module.css";
+
 export const metadata: Metadata = {
   title: "Login",
   description: "Login to your account",
 };
 
-const LoginPage = () => {
-  return (
-    <section>
+const LoginPage = () => (
+  <section className={styles.container}>
+    <div>
+      <h1>Login</h1>
+      <LoginForm />
       <div>
-        <h1>Login</h1>
-        <LoginForm />
         <Link href="/register">
-          <span>Register</span>
+          <span>Go To Register</span>
         </Link>
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default LoginPage;

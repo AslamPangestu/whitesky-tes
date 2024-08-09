@@ -25,7 +25,13 @@ export const POST = async (request: NextRequest) => {
   }
 
   const headersList = headers();
-  const token = headersList.get("Authorization") || "";
+  const [auth, token] = (headersList.get("Authorization") || "").split(" ");
+  if (auth !== "Bearer") {
+    return NextResponse.json(
+      { message: "Unauthorized", data: null, error: null },
+      { status: 401 },
+    );
+  }
   const { data: authData } = verifyToken(token);
   if (!authData) {
     return;
