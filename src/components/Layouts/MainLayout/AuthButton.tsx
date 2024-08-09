@@ -32,7 +32,9 @@ const AuthButton = () => {
     storage.remove();
     Cookie.remove("token");
     toast.success("Goddbye!");
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   };
 
   if (!user) {

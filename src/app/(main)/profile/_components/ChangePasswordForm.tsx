@@ -37,7 +37,9 @@ const ChangePasswordForm = () => {
     }
     Cookie.set("token", response.data.token, { expires: 1 });
     toast.success("Password changed");
-    router.push("/");
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
   };
 
   return (

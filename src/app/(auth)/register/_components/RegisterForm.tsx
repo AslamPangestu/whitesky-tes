@@ -41,7 +41,9 @@ const RegisterForm = () => {
     storage.set(response.data.user);
     Cookie.set("token", response.data.token, { expires: 1 });
     toast.success(`Welcome, ${response.data.user.name}`);
-    router.push("/");
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
   };
 
   return (
